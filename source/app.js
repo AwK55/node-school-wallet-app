@@ -18,16 +18,16 @@ const ApplicationError = require('libs/application-error');
 const CardsModel = require('source/models/cards');
 const TransactionsModel = require('source/models/transactions');
 
+const render =require('../public/bundle-server');
 const app = new Koa();
 
 // Сохраним параметр id в ctx.params.id
 router.param('id', (id, ctx, next) => next());
 
+app.use(bodyParser);
+app.use(serve('./public'));
 
-router.get('/', (ctx) => {
-	ctx.body = fs.readFileSync('./public/index.html', 'utf8');
-});
-
+router.get('/', render.default);
 router.get('/cards/', getCardsController);
 router.post('/cards/', createCardController);
 router.delete('/cards/:id', deleteCardController);
@@ -70,9 +70,7 @@ app.use(async (ctx, next) => {
 });
 
 
-app.use(bodyParser);
 app.use(router.routes());
-app.use(serve('./public'));
 
 app.listen(3000, () => {
 	console.log('Application started');
